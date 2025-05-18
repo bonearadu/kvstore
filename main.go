@@ -22,6 +22,12 @@ func main() {
 	case config.Persistent:
 		store = kv_store.NewPersistentStore(cfg.StorePath)
 		log.Printf("Using persistent KV store. Store root path: %s", cfg.StorePath)
+	case config.PersistentCached:
+		store = kv_store.NewPersistentCachedStore(cfg.StorePath, cfg.CacheCapacity)
+		log.Printf("Using persistent KV store with caching. Store root path: %s. Cache size: %d",
+			cfg.StorePath, cfg.CacheCapacity)
+	default:
+		log.Panicf("Unknown map store implementation specified: %d", cfg.Mode)
 	}
 
 	handler := api.NewHandler(store)
