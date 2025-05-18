@@ -5,19 +5,19 @@ import (
 	"sync"
 )
 
-type InMemoryStore[K comparable, V any] struct {
-	mapStore map[K]V
+type InMemoryStore struct {
+	mapStore map[string]string
 	mu       sync.RWMutex
 }
 
-func NewInMemoryStore[K comparable, V any]() *InMemoryStore[K, V] {
-	return &InMemoryStore[K, V]{
-		mapStore: make(map[K]V),
+func NewInMemoryStore() *InMemoryStore {
+	return &InMemoryStore{
+		mapStore: make(map[string]string),
 		mu:       sync.RWMutex{},
 	}
 }
 
-func (i *InMemoryStore[K, V]) Put(key K, value V) error {
+func (i *InMemoryStore) Put(key string, value string) error {
 	i.mu.Lock()
 	defer i.mu.Unlock()
 
@@ -26,19 +26,19 @@ func (i *InMemoryStore[K, V]) Put(key K, value V) error {
 	return nil
 }
 
-func (i *InMemoryStore[K, V]) Get(key K) (V, error) {
+func (i *InMemoryStore) Get(key string) (string, error) {
 	i.mu.RLock()
 	defer i.mu.RUnlock()
 
 	value, ok := i.mapStore[key]
 
 	if !ok {
-		return value, fmt.Errorf("key not found")
+		return "", fmt.Errorf("key not found")
 	}
 	return value, nil
 }
 
-func (i *InMemoryStore[K, V]) Delete(key K) error {
+func (i *InMemoryStore) Delete(key string) error {
 	i.mu.Lock()
 	defer i.mu.Unlock()
 
@@ -47,13 +47,13 @@ func (i *InMemoryStore[K, V]) Delete(key K) error {
 	return nil
 }
 
-func (i *InMemoryStore[K, V]) Entries() ([]Entry[K, V], error) {
+func (i *InMemoryStore) Entries() ([]Entry, error) {
 	i.mu.RLock()
 	defer i.mu.RUnlock()
 
-	entries := make([]Entry[K, V], 0, len(i.mapStore))
+	entries := make([]Entry, 0, len(i.mapStore))
 	for k, v := range i.mapStore {
-		entries = append(entries, Entry[K, V]{Key: k, Value: v})
+		entries = append(entries, Entry{Key: k, Value: v})
 	}
 
 	return entries, nil

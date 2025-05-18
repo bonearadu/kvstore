@@ -14,7 +14,7 @@ type MockStore struct {
 	GetFunc     func(key string) (string, error)
 	PutFunc     func(key string, value string) error
 	DeleteFunc  func(key string) error
-	EntriesFunc func() ([]kv_store.Entry[string, string], error)
+	EntriesFunc func() ([]kv_store.Entry, error)
 }
 
 func (m *MockStore) Get(key string) (string, error) {
@@ -38,11 +38,11 @@ func (m *MockStore) Delete(key string) error {
 	return nil
 }
 
-func (m *MockStore) Entries() ([]kv_store.Entry[string, string], error) {
+func (m *MockStore) Entries() ([]kv_store.Entry, error) {
 	if m.EntriesFunc != nil {
 		return m.EntriesFunc()
 	}
-	return []kv_store.Entry[string, string]{}, nil
+	return []kv_store.Entry{}, nil
 }
 
 // TestExtractKey tests the extractKey function
@@ -243,9 +243,9 @@ func TestHandleDeleteKey(t *testing.T) {
 func TestHandleListEntries(t *testing.T) {
 	// Create a mock store
 	mockStore := &MockStore{
-		EntriesFunc: func() ([]kv_store.Entry[string, string], error) {
+		EntriesFunc: func() ([]kv_store.Entry, error) {
 			// Return some sample entries
-			return []kv_store.Entry[string, string]{
+			return []kv_store.Entry{
 				{Key: "key1", Value: "value1"},
 				{Key: "key2", Value: "value2"},
 			}, nil
@@ -278,14 +278,14 @@ func TestHandleListEntries(t *testing.T) {
 	}
 
 	// Parse the response body
-	var responseList []kv_store.Entry[string, string]
+	var responseList []kv_store.Entry
 	err := json.Unmarshal(rr.Body.Bytes(), &responseList)
 	if err != nil {
 		t.Fatalf("Failed to parse response body: %v", err)
 	}
 
 	// Check the response content
-	expectedList := []kv_store.Entry[string, string]{
+	expectedList := []kv_store.Entry{
 		{Key: "key1", Value: "value1"},
 		{Key: "key2", Value: "value2"},
 	}

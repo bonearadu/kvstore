@@ -12,7 +12,7 @@ func main() {
 	cfg := config.ParseFlags()
 
 	// Initialize components
-	store := kv_store.NewInMemoryStore[string, string]()
+	store := kv_store.NewInMemoryStore()
 	handler := api.NewHandler(store)
 	srv := server.New(cfg, handler)
 

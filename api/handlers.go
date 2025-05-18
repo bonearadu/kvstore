@@ -11,12 +11,12 @@ import (
 
 // Handler handles HTTP requests for the key-value store
 type Handler struct {
-	store kv_store.KeyValueStore[string, string]
+	store kv_store.KeyValueStore
 	mux   *http.ServeMux
 }
 
 // NewHandler creates a new Handler with the given store
-func NewHandler(store kv_store.KeyValueStore[string, string]) *Handler {
+func NewHandler(store kv_store.KeyValueStore) *Handler {
 	h := &Handler{
 		store: store,
 		mux:   http.NewServeMux(),
